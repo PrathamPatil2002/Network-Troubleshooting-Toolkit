@@ -1,5 +1,6 @@
 # Network-Troubleshooting-Toolkit
-<img width="1357" height="637" alt="Network-Troubleshooting-Toolkit screenshot" src="https://github.com/user-attachments/assets/3ab9565b-67d6-4863-9cd3-1664d704c7ea" />
+<img width="1321" height="642" alt="network toolkit diagnostics screenshot" src="https://github.com/user-attachments/assets/786d6ebb-6b73-4914-9d66-1b783210442c" />
+
 
 A Python and Flask-based Network Troubleshooting Toolkit that helps users diagnose network connectivity issues through ping testing, DNS lookup, device information, and quick diagnostics. Features a responsive dark-themed web dashboard built with HTML, CSS, and JavaScript to simplify basic network troubleshooting.
 
