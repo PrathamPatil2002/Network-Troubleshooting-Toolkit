@@ -1,0 +1,495 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Network Troubleshooting Toolkit for ping testing, DNS lookup, and device diagnostics.">
+    <title>Network Troubleshooting Toolkit</title>
+
+    <style>
+        :root {
+            --bg: #0b1120;
+            --panel: #131d30;
+            --border: #293952;
+            --text: #edf4ff;
+            --muted: #9aabc4;
+            --accent: #55a8ff;
+            --green: #45d6a0;
+            --red: #ff8995;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        .container {
+            width: min(1100px, 92%);
+            margin: auto;
+            padding: 38px 0;
+        }
+
+        header {
+            margin-bottom: 28px;
+        }
+
+        .eyebrow {
+            color: var(--accent);
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin: 12px 0;
+            font-size: clamp(30px, 5vw, 44px);
+            color: #ffffff;
+        }
+
+        .intro {
+            max-width: 650px;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            margin-top: 10px;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            background: #102b2a;
+            color: #b8f7df;
+            font-size: 13px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            min-width: 0;
+            padding: 24px;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            background: var(--panel);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 19px;
+        }
+
+        .card p {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        label {
+            display: block;
+            margin: 18px 0 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            outline: none;
+            background: #091321;
+            color: var(--text);
+            font: inherit;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+        }
+
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        button {
+            padding: 11px 15px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: #19263c;
+            color: var(--text);
+            font: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button.primary {
+            border-color: transparent;
+            background: var(--accent);
+            color: #071426;
+        }
+
+        button:hover {
+            filter: brightness(1.12);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        .results-card {
+            grid-column: 1 / -1;
+        }
+
+        .result {
+            min-height: 100px;
+            margin-top: 16px;
+            padding: 18px;
+            overflow-wrap: anywhere;
+            white-space: pre-wrap;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: #091321;
+            color: #d7e5fa;
+            font: 13px/1.8 Consolas, monospace;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .result-item {
+            min-width: 0;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow-wrap: anywhere;
+            white-space: pre-wrap;
+        }
+
+        .result-item strong {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--accent);
+            font-size: 12px;
+        }
+
+        .success {
+            border-color: #2a6858;
+        }
+
+        .error {
+            border-color: #75414b;
+            color: var(--red);
+        }
+
+        footer {
+            margin-top: 28px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.7;
+            text-align: center;
+        }
+
+        @media (max-width: 700px) {
+            .layout,
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .results-card {
+                grid-column: auto;
+            }
+
+            .card {
+                padding: 19px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<main class="container">
+
+    <header>
+        <div class="eyebrow">Network diagnostics Dashboard</div>
+
+        <h1>Network Troubleshooting Toolkit</h1>
+
+        <p class="intro">
+            Test network connectivity, resolve DNS records, and inspect
+            basic information about the computer running this application.
+        </p>
+
+        <div class="status">
+            <span class="dot"></span>
+            Diagnostic interface ready
+        </div>
+    </header>
+
+    <div class="layout">
+
+        <section class="card">
+            <h2>01. Ping Test</h2>
+            <p>Check whether a hostname or IP address responds to ping.</p>
+
+            <label for="pingHost">Hostname or IP address</label>
+            <input id="pingHost" placeholder="example.com" value="google.com">
+
+            <div class="buttons">
+                <button class="primary" onclick="runDiagnostic('ping')">
+                    Run Ping Test
+                </button>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>02. DNS Lookup</h2>
+            <p>Find the IP addresses associated with a hostname.</p>
+
+            <label for="dnsHost">Hostname</label>
+            <input id="dnsHost" placeholder="example.com" value="google.com">
+
+            <div class="buttons">
+                <button class="primary" onclick="runDiagnostic('dns')">
+                    Look Up DNS
+                </button>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>03. Device Information</h2>
+            <p>View hostname, operating system, Python version and local IP.</p>
+
+            <div class="buttons">
+                <button class="primary" onclick="runDiagnostic('device')">
+                    Get Device Information
+                </button>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>04. Quick Diagnostics</h2>
+            <p>Run ping, DNS lookup, and device information together.</p>
+
+            <label for="allHost">Hostname or IP address</label>
+            <input id="allHost" placeholder="example.com" value="google.com">
+
+            <div class="buttons">
+                <button class="primary" onclick="runDiagnostic('all')">
+                    Run All Diagnostics
+                </button>
+            </div>
+        </section>
+
+        <section class="card results-card">
+            <h2 id="resultTitle">Diagnostic Results</h2>
+            <p id="resultStatus">Waiting for your first test.</p>
+
+            <div class="result" id="result" aria-live="polite">
+                Results will appear here.
+            </div>
+
+            <div class="result-grid" id="resultGrid"></div>
+        </section>
+
+    </div>
+
+    <footer>
+        Network Troubleshooting Toolkit · Python · Flask · HTML · CSS · JavaScript
+        <br>
+        Checks run on the computer hosting this application.
+    </footer>
+
+</main>
+
+<script>
+    const resultBox = document.getElementById("result");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultStatus = document.getElementById("resultStatus");
+    const resultGrid = document.getElementById("resultGrid");
+
+    async function runDiagnostic(action) {
+        let host = "";
+
+        if (action === "ping") {
+            host = document.getElementById("pingHost").value.trim();
+        } else if (action === "dns") {
+            host = document.getElementById("dnsHost").value.trim();
+        } else if (action === "all") {
+            host = document.getElementById("allHost").value.trim();
+        }
+
+        if (["ping", "dns", "all"].includes(action) && !host) {
+            showError("Please enter a hostname or IP address first.");
+            return;
+        }
+
+        const buttons = document.querySelectorAll("button");
+        buttons.forEach(button => button.disabled = true);
+
+        resultTitle.textContent = "Running Diagnostics";
+        resultStatus.textContent = "Please wait...";
+        resultBox.textContent = "Connecting to Flask backend...";
+        resultBox.className = "result";
+        resultGrid.replaceChildren();
+
+        try {
+            const response = await fetch("/api/diagnose", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ action, host })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || "The request failed.");
+            }
+
+            resultTitle.textContent = "Diagnostic Results";
+            resultStatus.textContent = data.message || "Request completed.";
+
+            if (action === "device") {
+                resultBox.textContent = data.details || data.message;
+                resultBox.className = "result success";
+            } else if (action === "all") {
+                displayAll(data.results);
+            } else {
+                resultBox.textContent =
+                    `${data.message || ""}\n\n${data.details || ""}`;
+
+                resultBox.className = data.success
+                    ? "result success"
+                    : "result error";
+            }
+
+        } catch (error) {
+            showError(
+                "Cannot reach the Flask backend. Make sure py app.py is running.\n\n"
+                + error.message
+            );
+        } finally {
+            buttons.forEach(button => button.disabled = false);
+        }
+    }
+
+    function showError(message) {
+        resultTitle.textContent = "Diagnostic Results";
+        resultStatus.textContent = "Check required";
+        resultBox.className = "result error";
+        resultBox.textContent = message;
+        resultGrid.replaceChildren();
+    }
+
+    function addResult(title, value, success) {
+        const item = document.createElement("div");
+        item.className = "result-item";
+
+        if (success === true) {
+            item.classList.add("success");
+        } else if (success === false) {
+            item.classList.add("error");
+        }
+
+        const heading = document.createElement("strong");
+        heading.textContent = title;
+
+        const content = document.createElement("div");
+        content.textContent = String(value ?? "No details available.");
+
+        item.append(heading, content);
+        resultGrid.appendChild(item);
+    }
+
+    function displayAll(results) {
+        resultBox.textContent = "Quick diagnostics completed.";
+        resultBox.className = "result success";
+        resultGrid.replaceChildren();
+
+        if (!results) {
+            resultBox.textContent =
+                "No diagnostic results were returned. Check app.py.";
+            resultBox.className = "result error";
+            return;
+        }
+
+        const ping = results["Ping Test"];
+        const dns = results["DNS Lookup"];
+        const device = results["Device Information"];
+
+        if (ping) {
+            addResult(
+                "PING TEST",
+                `${ping.message}\n${ping.details || ""}`,
+                ping.success
+            );
+        }
+
+        if (dns) {
+            addResult(
+                "DNS LOOKUP",
+                `${dns.message}\n${dns.details || ""}`,
+                dns.success
+            );
+        }
+
+        if (device) {
+            addResult(
+                "DEVICE INFORMATION",
+                `${device.message}\n${device.details || ""}`,
+                device.success
+            );
+        }
+    }
+
+    document.querySelectorAll("input").forEach(input => {
+        input.addEventListener("keydown", event => {
+            if (event.key === "Enter") {
+                const actions = {
+                    pingHost: "ping",
+                    dnsHost: "dns",
+                    allHost: "all"
+                };
+
+                if (actions[input.id]) {
+                    runDiagnostic(actions[input.id]);
+                }
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
