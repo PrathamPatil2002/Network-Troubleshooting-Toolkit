@@ -4,6 +4,9 @@
 
 A Python and Flask-based Network Troubleshooting Toolkit that helps users diagnose network connectivity issues through ping testing, DNS lookup, device information, and quick diagnostics. Features a responsive dark-themed web dashboard built with HTML, CSS, and JavaScript to simplify basic network troubleshooting.
 
+Open http://127.0.0.1:5000  in your browser.
+
+
 ## Features
 - Ping testing
 - DNS lookup
@@ -29,7 +32,6 @@ Run the application:
 py app.py
 ```
 
-Open http://127.0.0.1:5000  file:///C:/Users/prath/Downloads/Pratham_IT_Portfolio_Projects/Network-Troubleshooting-Toolkit/templates/index.html in your browser.
 
 ## Note
 Diagnostics run on the computer hosting the application. Network settings may block ping or DNS requests.
